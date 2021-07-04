@@ -1,0 +1,20 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: hasura-postgresql
+spec:
+  teamId: hasura
+  volume:
+    size: 8Gi
+  numberOfInstances: 1
+  users:
+    admin:  # database owner
+    - superuser
+    - createdb
+    hasura: []
+  databases:
+    hasura: hasura
+  enableLogicalBackup: false
+  postgresql:
+    version: "13"
+  enableShmVolume: true

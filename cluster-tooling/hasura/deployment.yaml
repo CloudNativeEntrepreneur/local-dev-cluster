@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hasura
+    hasuraService: custom
+  name: hasura
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hasura
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hasura
+    spec:
+      containers:
+      - image: hasura/graphql-engine:v2.0.1
+        imagePullPolicy: IfNotPresent
+        name: hasura
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: hasura.hasura-postgresql.credentials.postgresql.acid.zalan.do
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hasura.hasura-postgresql.credentials.postgresql.acid.zalan.do
+              key: password
+        - name: POSTGRES_DATABASE
+          value: hasura
+        - name: POSTGRES_HOST
+          value: hasura-postgresql
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: HASURA_GRAPHQL_DATABASE_URL
+          value: postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DATABASE)
+        ## enable the console served by server
+        - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+          value: "false"
+        ## enable debugging mode. It is recommended to disable this in production
+        - name: HASURA_GRAPHQL_DEV_MODE
+          value: "true"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
