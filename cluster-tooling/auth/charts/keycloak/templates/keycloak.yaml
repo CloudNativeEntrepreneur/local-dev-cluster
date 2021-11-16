@@ -1,0 +1,12 @@
+apiVersion: keycloak.org/v1alpha1
+kind: Keycloak
+metadata:
+  name: auth
+  labels:
+    keycloak: auth
+    app: auth
+spec:
+  instances: 1
+  externalAccess:
+    enabled: True
+    host: auth.127.0.0.1.sslip.io

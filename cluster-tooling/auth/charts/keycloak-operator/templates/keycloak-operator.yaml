@@ -1,0 +1,16 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: operatorgroup
+spec:
+  targetNamespaces:
+  - auth
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: keycloak-operator
+spec:
+  name: keycloak-operator
+  source: operatorhubio-catalog
+  sourceNamespace: operator-lifecycle-manager

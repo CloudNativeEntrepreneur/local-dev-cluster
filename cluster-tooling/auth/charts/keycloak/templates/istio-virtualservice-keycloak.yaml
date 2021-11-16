@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: keycloak
+spec:
+  hosts:
+  - auth.127.0.0.1.sslip.io
+  gateways:
+  - keycloak
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8080
+        host: keycloak-http

@@ -49,6 +49,18 @@ install-istio:
 	kubectl rollout status deployment -w -n istio-system istio-ingressgateway
 	kubectl rollout status deployment -w -n istio-system istio-egressgateway
 
+install-keycloak-operator:
+	-kubectl create ns auth
+	helm template cluster-tooling/auth/charts/keycloak-operator | kubectl apply -n auth -f -
+	sleep 30
+	kubectl rollout status deployment -n auth -w keycloak-operator
+
+install-keycloak:
+	helm template cluster-tooling/auth/charts/keycloak | kubectl apply -n auth -f -
+	sleep 30
+	kubectl rollout status deployment -n auth -w keycloak-postgresql
+	kubectl rollout status statefulset -n auth -w keycloak
+
 install-knative:
 	-kubectl create ns knative-operator
 	kubectl apply -f cluster-tooling/knative/operator-v1.0.0.yaml -n knative-operator
