@@ -160,6 +160,18 @@ To delete the examples from your local cluster, run:
 make delete-examples
 ```
 
+## Authentication
+
+The local development cluster comes with Keycloak Operator installed via OLM, and a Keycloak instance and "dev" realm preconfigured.
+
+Keycloak can be accessed at http://auth.127.0.0.1.sslip.io/
+
+You can find the admin username and password with:
+
+```
+kubectl get secret -n auth credential-auth -o yaml | ksd
+```
+
 ## Destroy cluster
 
 To delete your local-dev-cluster, run `make delete-cluster`
