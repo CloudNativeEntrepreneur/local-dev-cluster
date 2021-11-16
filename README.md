@@ -1,6 +1,6 @@
 # local-development-cluster
 
-A cluster to run locally with istio, knative, postgres operator, schemahero, and other local dev tooling.
+A cluster to run locally with istio, knative, postgres operator, schemahero, keycloak, and other local dev tooling.
 
 ## Pre-setup
 
