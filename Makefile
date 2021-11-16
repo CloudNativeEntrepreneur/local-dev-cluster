@@ -15,15 +15,20 @@ delete-examples:
 
 # updates in git
 download-knative-operator:
-	curl -L https://github.com/knative/operator/releases/download/v0.23.0/operator.yaml \
+	curl -L https://github.com/knative/operator/releases/download/knative-v1.0.0/operator.yaml \
 		| sed 's/namespace: default/namespace: knative-operator/' \
-		> cluster-tooling/knative/operator-v0.23.0.yaml
+		> cluster-tooling/knative/operator-v1.0.0.yaml
+
+download-olm:
+	mkdir -p cluster-tooling/olm/charts/olm
+	mkdir -p .tmp && cd .tmp && curl -L https://github.com/operator-framework/operator-lifecycle-manager/archive/v0.19.1.tar.gz | tar zx
+	mv .tmp/operator-lifecycle-manager-0.19.1/deploy/chart/* cluster-tooling/olm/charts/olm
 
 finish-onboard:
 	@echo "✅ Local Development Cluster Configured."
 	@echo "👋 To use this cluster for development, in a new terminal, run \`make localizer\` and leave this process running to access internal Kubernetes addresses from your local machine."
 
-install-cluster-tooling: install-metrics-server install-istio install-knative install-postgres-operator install-schemahero
+install-cluster-tooling: install-metrics-server install-olm install-istio install-knative install-postgres-operator install-schemahero
 
 install-hasura:
 	kubectl apply -f cluster-tooling/hasura/postgresql.yaml
@@ -46,7 +51,7 @@ install-istio:
 
 install-knative:
 	-kubectl create ns knative-operator
-	kubectl apply -f cluster-tooling/knative/operator-v0.23.0.yaml -n knative-operator
+	kubectl apply -f cluster-tooling/knative/operator-v1.0.0.yaml -n knative-operator
 	kubectl rollout status deployment -w -n knative-operator knative-operator
 	kubectl apply -f cluster-tooling/knative/knative-serving.yaml
 	sleep 30
@@ -54,8 +59,10 @@ install-knative:
 	kubectl rollout status deployment -w -n knative-serving autoscaler
 	kubectl rollout status deployment -w -n knative-serving autoscaler-hpa
 	kubectl rollout status deployment -w -n knative-serving controller
-	kubectl rollout status deployment -w -n knative-serving istio-webhook
-	kubectl rollout status deployment -w -n knative-serving networking-istio
+	kubectl rollout status deployment -w -n knative-serving domain-mapping
+	kubectl rollout status deployment -w -n knative-serving domainmapping-webhook
+	kubectl rollout status deployment -w -n knative-serving net-istio-webhook
+	kubectl rollout status deployment -w -n knative-serving net-istio-controller
 	kubectl rollout status deployment -w -n knative-serving webhook
 	kubectl label namespace default istio-injection=enabled --overwrite=true
 	kubectl apply -f cluster-tooling/knative/knative-eventing.yaml
@@ -67,12 +74,18 @@ install-knative:
 	kubectl rollout status deployment -w -n knative-eventing mt-broker-controller
 	kubectl rollout status deployment -w -n knative-eventing mt-broker-filter
 	kubectl rollout status deployment -w -n knative-eventing mt-broker-ingress
-	kubectl rollout status deployment -w -n knative-eventing pingsource-mt-adapter
 	kubectl rollout status deployment -w -n knative-eventing sugar-controller
 
 install-metrics-server:
 	helm install metrics-server bitnami/metrics-server -n kube-system \
 		-f cluster-tooling/metrics-server/values.yaml
+	kubectl rollout status -n kube-system -w deployment metrics-server
+
+install-olm:
+	kubectl apply -f cluster-tooling/olm/charts/olm/crds/
+	helm template ./cluster-tooling/olm/charts/olm | kubectl apply -f -
+	kubectl rollout status -n operator-lifecycle-manager -w deployment olm-operator
+	kubectl rollout status -n operator-lifecycle-manager -w deployment catalog-operator
 
 install-postgres-operator:
 	-kubectl create ns pgo
@@ -83,6 +96,7 @@ install-postgres-operator:
 
 install-schemahero:
 	kubectl schemahero install
+	kubectl rollout status statefulset -n schemahero-system -w schemahero 
 
 localizer:
 	sudo localizer
