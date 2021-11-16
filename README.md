@@ -4,59 +4,23 @@ A cluster to run locally with istio, knative, postgres operator, schemahero, and
 
 ## Pre-setup
 
-You might need to install some applications to build this correctly
+You will need to install some tools locally:
 
-### K-in-D (Kubernetes in Docker)
+* K-in-D (Kubernetes in Docker)
+* Helm
+* KNative
+* Istio
+* Krew
+* SchemaHero
 
-```
-brew install kind
-```
-
-### Helm
-
-```
-brew install helm
-```
+The repository [onboard](https://github.com/cloudnativeentrepreneur/onboard) attempts to install all of these in an automated fashion.
 
 ### Helm Repos
 
+You may need to add the following helm repos
+
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
-```
-
-### KNative
-
-```
-brew tap knative/client
-brew install kn
-```
-
-### Istio
-
-```
-curl -L https://istio.io/downloadIstio | sh -
-cd istio-1.10.0
-export PATH=$PWD/bin:$PATH
-```
-
-### Krew
-```
-(
-  set -x; cd "$(mktemp -d)" &&
-  OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
-  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
-  KREW="krew-${OS}_${ARCH}" &&
-  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
-  tar zxvf "${KREW}.tar.gz" &&
-  ./"${KREW}" install krew
-)
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-```
-
-### SchemaHero
-
-```
-kubectl krew install schemahero
 ```
 
 ## Setup
