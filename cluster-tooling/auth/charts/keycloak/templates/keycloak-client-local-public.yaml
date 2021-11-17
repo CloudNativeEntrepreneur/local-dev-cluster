@@ -1,0 +1,46 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: local-public
+  labels:
+    app: auth
+spec:
+  realmSelector:
+    matchLabels:
+      realm: dev
+  client:
+    clientId: local-public
+    defaultClientScopes:
+      - profile
+      - email
+      - roles
+    directAccessGrantsEnabled: true
+    implicitFlowEnabled: false
+    protocol: openid-connect
+    protocolMappers:
+      - name: audience
+        protocolMapper: oidc-audience-mapper
+        protocol: openid-connect
+        config:
+          claim.name: audience
+          access.token.claim: "true"
+          included.client.audience: client-test
+      - name: username
+        protocolMapper: oidc-usermodel-property-mapper
+        protocol: openid-connect
+        config:
+          access.token.claim: "true"
+          claim.name: username
+          jsonType.label: String
+          user.attribute: username
+      - name: roles
+        protocolMapper: oidc-usermodel-client-role-mapper
+        protocol: openid-connect
+        config:
+          access.token.claim: "true"
+          claim.name: roles
+          jsonType.label: String
+          multivalued: "true"
+    redirectUris:
+      - "*"
+    standardFlowEnabled: true
