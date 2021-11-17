@@ -13,6 +13,9 @@ spec:
     email: pat@patscott.io
     enabled: true
     emailVerified: true
+    realmRoles:
+      - "user"
+      - "admin"
   realmSelector:
     matchLabels:
       realm: dev

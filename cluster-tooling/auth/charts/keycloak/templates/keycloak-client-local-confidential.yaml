@@ -8,9 +8,6 @@ spec:
   realmSelector:
     matchLabels:
       realm: dev
-  roles:
-  - name: user
-    clientRole: true
   client:
     clientId: local-confidential
     clientAuthenticatorType: confidential

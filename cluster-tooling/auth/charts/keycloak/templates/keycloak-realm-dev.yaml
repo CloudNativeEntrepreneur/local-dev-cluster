@@ -11,6 +11,12 @@ spec:
     realm: dev
     enabled: true
     displayName: Dev Realm
+    roles:
+      realm:
+      - name: user
+      - name: player
+      - name: game-master
+      - name: admin
   instanceSelector:
     matchLabels:
       keycloak: auth
