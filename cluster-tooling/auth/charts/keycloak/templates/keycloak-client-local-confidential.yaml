@@ -8,6 +8,9 @@ spec:
   realmSelector:
     matchLabels:
       realm: dev
+  roles:
+  - name: user
+    clientRole: true
   client:
     clientId: local-confidential
     clientAuthenticatorType: confidential
@@ -42,6 +45,37 @@ spec:
           claim.name: roles
           jsonType.label: String
           multivalued: "true"
+      - name: x-hasura-user-id
+        protocolMapper: oidc-usermodel-property-mapper
+        protocol: openid-connect
+        config:
+          access.token.claim: "true"
+          id.token.claim: "true"
+          userinfo.token.claim: "true"
+          claim.name: https://hasura\.io/jwt/claims.x-hasura-user-id
+          jsonType.label: String
+          user.attribute: id
+      - name: x-hasura-default-role
+        protocolMapper: oidc-hardcoded-claim-mapper
+        protocol: openid-connect
+        config:
+          access.token.claim: "true"
+          id.token.claim: "true"
+          userinfo.token.claim: "true"
+          claim.name: https://hasura\.io/jwt/claims.x-hasura-default-role
+          jsonType.label: String
+          claim.value: user
+      - name: x-hasura-allowed-roles
+        protocolMapper: oidc-usermodel-client-role-mapper
+        protocol: openid-connect
+        config:
+          access.token.claim: "true"
+          id.token.claim: "true"
+          userinfo.token.claim: "true"
+          claim.name: x-hasura-allowed-roles
+          jsonType.label: String
+          multivalued: "true"
+          usermodel.clientRoleMapping.clientId: "local-public"
     redirectUris:
       - "*"
     standardFlowEnabled: true
