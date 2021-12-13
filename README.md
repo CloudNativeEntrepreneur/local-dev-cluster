@@ -138,6 +138,36 @@ You can find the admin username and password with:
 kubectl get secret -n auth credential-auth -o yaml | ksd
 ```
 
+## Networking
+
+To be able to use tools like schemahero, the postgres operator, and other cool things that are possible with Kubernetes, we need to run Kubernetes. The problem is these things are within a private network inside of kubernetes. For development that is not ideal.
+
+When developing, it's easiest to have everything on `localhost` cause you can't just send requests across networks.
+
+I've found a good blend is to run the "appliance" type things, like databases, or a 3rd-party helm chart or container you just run, are great to set up on Kubernetes, because they are easy to set up, but then they are hard to get at - so I use port-forwarding to expose those needed appliances to my local network, but I use `localizer` to do the port-forwarding. From within the kubernetes network, use `host.docker.internal`.
+
+### host.docker.internal
+
+Still, some appliance type applications are still complicated by this network division, such as Hasura's Actions feature - if it's running inside of Kubernetes it can't send requests to localhost. Luckily, at least when running Kubernetes with Kind (Kubernetes in Docker), as the local development cluster does, as well as some other local kubernetes clusters based on docker, we can access `localhost` via `host.docker.internal`
+
+### localizer
+
+Localizer eases development with Kubernetes by managing tunnels and host aliases to your connected Kubernetes cluster. This way, instead of port-forwarding tools like databases to use them, you can just use their internal network address: `http://${serviceName}.${namespace}.svc.cluster.local`.
+
+This is kinda the opposite of host.docker.internal - it allows local services to hit services running inside of kubernetes.
+
+It does this by managing the port-forwarding for you as well as updating you `/etc/hosts` file on your local machine with that port forward information.
+
+For example, to connect to the `example-readmodel` psql db:
+
+```
+HASURA_GRAPHQL_METADATA_DATABASE_URL=postgres://metadata:$(kubectl get secret metadata.hasura-metadata-postgresql.credentials.postgresql.acid.zalan.do)@hasura-metadata-postgresql.default.svc.cluster.local:5432/metadata
+
+HASURA_GRAPHQL_DATABASE_URL=postgres://readmodel:$(kubectl get secret readmodel.example-readmodel-postgresql.credentials.postgresql.acid.zalan.do)@example-readmodel-postgresql.default.svc.cluster.local:5432/readmodel
+```
+
+Will work from inside the cluster, as well as localhost with localizer.
+
 ## Destroy cluster
 
 To delete your local-dev-cluster, run `make delete-cluster`
