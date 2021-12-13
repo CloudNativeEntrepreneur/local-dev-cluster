@@ -126,7 +126,9 @@ make delete-examples
 
 ## Authentication
 
-The local development cluster comes with Keycloak Operator installed via OLM, and a Keycloak instance and "dev" realm preconfigured.
+The local development cluster comes with scripts to set up Keycloak Operator installed via OLM, and a Keycloak instance and "dev" realm preconfigured. These are not used in every project, and therefore not installed by default.
+
+To install OLM, the keycloak operator, and keycloak, run `make install-keycloak`
 
 Keycloak can be accessed at http://auth.127.0.0.1.sslip.io/
 

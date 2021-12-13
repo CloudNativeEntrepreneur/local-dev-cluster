@@ -28,7 +28,7 @@ finish-onboard:
 	@echo "✅ Local Development Cluster Configured."
 	@echo "👋 To use this cluster for development, in a new terminal, run \`make localizer\` and leave this process running to access internal Kubernetes addresses from your local machine."
 
-install-cluster-tooling: install-metrics-server install-olm install-istio install-knative install-postgres-operator install-schemahero
+install-cluster-tooling: install-metrics-server install-istio install-knative install-postgres-operator install-schemahero
 
 install-hasura:
 	kubectl apply -f cluster-tooling/hasura/postgresql.yaml
@@ -55,9 +55,9 @@ install-keycloak-operator:
 	sleep 30
 	kubectl rollout status deployment -n auth -w keycloak-operator
 
-install-keycloak:
+install-keycloak: install-olm install-keycloak-operator
 	helm template cluster-tooling/auth/charts/keycloak | kubectl apply -n auth -f -
-	sleep 30
+	sleep 60
 	kubectl rollout status deployment -n auth -w keycloak-postgresql
 	kubectl rollout status statefulset -n auth -w keycloak
 
