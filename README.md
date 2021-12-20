@@ -160,12 +160,12 @@ This is kinda the opposite of host.docker.internal - it allows local services to
 
 It does this by managing the port-forwarding for you as well as updating you `/etc/hosts` file on your local machine with that port forward information.
 
-For example, to connect to the `ig-readmodel` psql db:
+For example, to connect to the `example-readmodel` psql db:
 
 ```
 HASURA_GRAPHQL_METADATA_DATABASE_URL=postgres://metadata:$(kubectl get secret metadata.hasura-metadata-postgresql.credentials.postgresql.acid.zalan.do)@hasura-metadata-postgresql.default.svc.cluster.local:5432/metadata
 
-HASURA_GRAPHQL_DATABASE_URL=postgres://readmodel:$(kubectl get secret readmodel.ig-readmodel-postgresql.credentials.postgresql.acid.zalan.do)@ig-readmodel-postgresql.default.svc.cluster.local:5432/readmodel
+HASURA_GRAPHQL_DATABASE_URL=postgres://readmodel:$(kubectl get secret readmodel.example-readmodel-postgresql.credentials.postgresql.acid.zalan.do)@example-readmodel-postgresql.default.svc.cluster.local:5432/readmodel
 ```
 
 Will work from inside the cluster, as well as localhost with localizer.
