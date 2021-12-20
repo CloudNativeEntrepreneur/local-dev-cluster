@@ -25,8 +25,8 @@ download-olm:
 	mv .tmp/operator-lifecycle-manager-0.19.1/deploy/chart/* cluster-tooling/olm/charts/olm
 
 finish-onboard:
-	@echo "✅ Local Development Cluster Configured."
-	@echo "👋 To use this cluster for development, in a new terminal, run \`make localizer\` and leave this process running to access internal Kubernetes addresses from your local machine."
+	@echo "\n✅ Local Development Cluster Configured."
+	@echo "\n👋 To use this cluster for development, in a new terminal, run \`make localizer\` and leave this process running to access internal Kubernetes addresses from your local machine.\n\n"
 
 install-cluster-tooling: install-metrics-server install-istio install-knative install-postgres-operator install-schemahero
 
